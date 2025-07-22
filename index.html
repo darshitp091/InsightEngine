@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightEngine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4285F4; /* Google Blue */
+            --secondary-color: #34A853; /* Google Green */
+            --accent-color: #FBBC05; /* Google Yellow */
+            --danger-color: #EA4335; /* Google Red */
+            --text-dark: #202124;
+            --text-light: #5F6368;
+            --bg-light: #F8F9FA;
+            --bg-white: #FFFFFF;
+            --border-light: #DADCE0;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --shadow-medium: rgba(0, 0, 0, 0.12);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        .main-wrapper {
+            width: 90%;
+            max-width: 1000px;
+            background-color: var(--bg-white);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px var(--shadow-medium);
+            border: 1px solid var(--border-light);
+            padding: 40px;
+            margin-top: 40px;
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .input-section {
+            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            min-height: 220px;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            box-shadow: inset 0 1px 3px var(--shadow-light);
+            transition: all 0.3s ease;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+            outline: none;
+            background-color: var(--bg-white);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button:hover {
+            background-color: #357ae8; /* Darker shade of primary */
+            box-shadow: 0 6px 16px rgba(66, 133, 244, 0.4);
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+        }
+        button:disabled {
+            background-color: #cccccc;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin-left: 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 15px;
+            font-weight: 500;
+            background-color: rgba(234, 67, 53, 0.1);
+            border: 1px solid var(--danger-color);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Navigation for sections */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: inset 0 1px 3px var(--shadow-light);
+        }
+        .nav-tab {
+            background-color: transparent;
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        .nav-tab:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: var(--text-dark);
+        }
+        .nav-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+            font-weight: 600;
+        }
+
+        /* Result Sections - Clean Aesthetic */
+        .result-section {
+            margin-top: 30px;
+            padding: 30px;
+            background-color: var(--bg-white);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 4px 16px var(--shadow-light);
+        }
+        .result-section h2 {
+            color: var(--primary-color);
+            text-align: left;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+        .result-section h3 {
+            color: var(--text-dark);
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+        .result-section pre {
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 40px;
+            border: 1px solid var(--border-light);
+            line-height: 1.6;
+            color: var(--text-dark);
+            font-size: 0.95em;
+            box-shadow: inset 0 1px 3px var(--shadow-light);
+        }
+
+        .qa-section input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            font-size: 1em;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            box-shadow: inset 0 1px 3px var(--shadow-light);
+            box-sizing: border-box;
+        }
+        .qa-section input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+            outline: none;
+            background-color: var(--bg-white);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <h1>InsightEngine: Multi-Perspective Content Analysis</h1>
+        <div class="input-section" id="analysisForm">
+            <textarea id="inputText" placeholder="Paste your text here for analysis..."></textarea>
+            <button type="submit" id="analyzeButton">Analyze Text</button>
+            <div class="loading-spinner" id="analysisSpinner"></div>
+            <div class="error-message" id="analysisError"></div>
+        </div>
+
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-target="#summarySection">Summary</div>
+            <div class="nav-tab" data-target="#sentimentSection">Sentiment</div>
+            <div class="nav-tab" data-target="#entitiesSection">Entities</div>
+            <div class="nav-tab" data-target="#biasSection">Bias</div>
+            <div class="nav-tab" data-target="#synthesisSection">Synthesis</div>
+            <div class="nav-tab" data-target="#extraSection">Extra Insights</div>
+            <div class="nav-tab" data-target="#qaSection">Q&A</div>
+        </div>
+
+        <div id="summarySection" class="result-section">
+            <h2>Summaries</h2>
+            <h3>General Summary:</h3>
+            <pre id="summaryResult">Waiting for analysis...</pre>
+            <h3>Executive Summary:</h3>
+            <pre id="executiveSummaryResult">Waiting for analysis...</pre>
+            <h3>Technical Summary:</h3>
+            <pre id="technicalSummaryResult">Waiting for analysis...</pre>
+            <h3>Non-Expert Summary:</h3>
+            <pre id="nonExpertSummaryResult">Waiting for analysis...</pre>
+        </div>
+
+        <div id="sentimentSection" class="result-section">
+            <h2>Sentiment Analysis</h2>
+            <pre id="sentimentResult">Waiting for analysis...</pre>
+        </div>
+
+        <div id="entitiesSection" class="result-section">
+            <h2>Key Entities</h2>
+            <pre id="entitiesResult">Waiting for analysis...</pre>
+        </div>
+
+        <div id="biasSection" class="result-section">
+            <h2>Bias/Stance Detection</h2>
+            <pre id="biasDetectionResult">Waiting for analysis...</pre>
+        </div>
+
+        <div id="synthesisSection" class="result-section">
+            <h2>Content Synthesis</h2>
+            <h3>Tweet:</h3>
+            <pre id="tweetResult">Waiting for analysis...</pre>
+            <h3>Blog Idea:</h3>
+            <pre id="blogIdeaResult">Waiting for analysis...</pre>
+            <h3>Headline:</h3>
+            <pre id="headlineResult">Waiting for analysis...</pre>
+        </div>
+
+        <div id="extraSection" class="result-section">
+            <h2>Extra Insights</h2>
+            <h3>Topics:</h3>
+            <pre id="topicsResult">Waiting for analysis...</pre>
+            <h3>Language:</h3>
+            <pre id="languageResult">Waiting for analysis...</pre>
+            <h3>Questions:</h3>
+            <pre id="questionsResult">Waiting for analysis...</pre>
+        </div>
+
+        <div id="qaSection" class="result-section qa-section">
+            <h2>Question Answering</h2>
+            <input type="text" id="questionInput" placeholder="Ask a question about the text...">
+            <button id="askQuestionButton">Ask</button>
+            <div class="loading-spinner" id="qaSpinner"></div>
+            <div class="error-message" id="qaError"></div>
+            <pre id="answerResult">Answer will appear here...</pre>
+        </div>
+    </div>
+
+    <script>
+        const analysisForm = document.getElementById('analysisForm');
+        const inputText = document.getElementById('inputText');
+        const analyzeButton = document.getElementById('analyzeButton');
+        const analysisSpinner = document.getElementById('analysisSpinner');
+        const analysisError = document.getElementById('analysisError');
+
+        const summaryResult = document.getElementById('summaryResult');
+        const executiveSummaryResult = document.getElementById('executiveSummaryResult');
+        const technicalSummaryResult = document.getElementById('technicalSummaryResult');
+        const nonExpertSummaryResult = document.getElementById('nonExpertSummaryResult');
+        const sentimentResult = document.getElementById('sentimentResult');
+        const entitiesResult = document.getElementById('entitiesResult');
+        const biasDetectionResult = document.getElementById('biasDetectionResult');
+        const tweetResult = document.getElementById('tweetResult');
+        const blogIdeaResult = document.getElementById('blogIdeaResult');
+        const headlineResult = document.getElementById('headlineResult');
+        const topicsResult = document.getElementById('topicsResult');
+        const languageResult = document.getElementById('languageResult');
+        const questionsResult = document.getElementById('questionsResult');
+
+        const questionInput = document.getElementById('questionInput');
+        const askQuestionButton = document.getElementById('askQuestionButton');
+        const qaSpinner = document.getElementById('qaSpinner');
+        const qaError = document.getElementById('qaError');
+        const answerResult = document.getElementById('answerResult');
+
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const resultSections = document.querySelectorAll('.result-section');
+
+        function resetResults() {
+            summaryResult.textContent = 'Waiting for analysis...';
+            executiveSummaryResult.textContent = 'Waiting for analysis...';
+            technicalSummaryResult.textContent = 'Waiting for analysis...';
+            nonExpertSummaryResult.textContent = 'Waiting for analysis...';
+            sentimentResult.textContent = 'Waiting for analysis...';
+            entitiesResult.textContent = 'Waiting for analysis...';
+            biasDetectionResult.textContent = 'Waiting for analysis...';
+            tweetResult.textContent = 'Waiting for analysis...';
+            blogIdeaResult.textContent = 'Waiting for analysis...';
+            headlineResult.textContent = 'Waiting for analysis...';
+            topicsResult.textContent = 'Waiting for analysis...';
+            languageResult.textContent = 'Waiting for analysis...';
+            questionsResult.textContent = 'Waiting for analysis...';
+            answerResult.textContent = 'Answer will appear here...';
+            analysisError.textContent = '';
+            qaError.textContent = '';
+        }
+
+        function scrollToSection(targetId) {
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 20, // Offset for padding/header
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function updateActiveTab() {
+            let currentActiveSectionId = '';
+            for (let i = resultSections.length - 1; i >= 0; i--) {
+                const section = resultSections[i];
+                const rect = section.getBoundingClientRect();
+                // Check if the section is mostly in view
+                if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                    currentActiveSectionId = section.id;
+                    break;
+                }
+            }
+
+            navTabs.forEach(tab => {
+                if (tab.dataset.target === `#${currentActiveSectionId}`) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+        }
+
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = tab.dataset.target;
+                scrollToSection(targetId);
+            });
+        });
+
+        // Listen for scroll events to update active tab
+        window.addEventListener('scroll', updateActiveTab);
+        window.addEventListener('resize', updateActiveTab);
+        window.addEventListener('load', updateActiveTab);
+
+        analyzeButton.addEventListener('click', async function(event) {
+            event.preventDefault();
+            resetResults();
+
+            if (inputText.value.trim() === '') {
+                analysisError.textContent = 'Please enter some text to analyze.';
+                return;
+            }
+
+            analyzeButton.disabled = true;
+            analysisSpinner.style.display = 'inline-block';
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('text', inputText.value);
+
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Analysis failed.');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+
+                    // Process complete messages
+                    const messages = buffer.split('\n\n');
+                    buffer = messages.pop(); // Keep incomplete message in buffer
+
+                    for (const message of messages) {
+                        if (message.startsWith('event:')) {
+                            const eventType = message.substring(message.indexOf('event:') + 6, message.indexOf('\n')).trim();
+                            const dataString = message.substring(message.indexOf('data:') + 5).trim();
+
+                            try {
+                                const data = JSON.parse(dataString);
+                                switch (eventType) {
+                                    case 'summary': summaryResult.textContent = data; break;
+                                    case 'sentiment': sentimentResult.textContent = data; break;
+                                    case 'entities': entitiesResult.textContent = data; break;
+                                    case 'executive_summary': executiveSummaryResult.textContent = data; break;
+                                    case 'technical_summary': technicalSummaryResult.textContent = data; break;
+                                    case 'non_expert_summary': nonExpertSummaryResult.textContent = data; break;
+                                    case 'bias_detection': biasDetectionResult.textContent = data; break;
+                                    case 'tweet': tweetResult.textContent = data; break;
+                                    case 'blog_idea': blogIdeaResult.textContent = data; break;
+                                    case 'headline': headlineResult.textContent = data; break;
+                                    case 'topics': topicsResult.textContent = data; break;
+                                    case 'language': languageResult.textContent = data; break;
+                                    case 'questions': questionsResult.textContent = data; break;
+                                    case 'complete':
+                                        analyzeButton.disabled = false;
+                                        analysisSpinner.style.display = 'none';
+                                        scrollToSection('#summarySection');
+                                        break;
+                                }
+                            } catch (parseError) {
+                                console.error('Error parsing JSON from SSE:', parseError, 'Data:', dataString);
+                            }
+                        }
+                    }
+                }
+
+            } catch (error) {
+                analysisError.textContent = `Network Error: ${error.message}`;
+                console.error('Error:', error);
+                analyzeButton.disabled = false;
+                analysisSpinner.style.display = 'none';
+            }
+        });
+
+        askQuestionButton.addEventListener('click', async function() {
+            qaError.textContent = '';
+            if (inputText.value.trim() === '') {
+                qaError.textContent = 'Please analyze text first before asking a question.';
+                return;
+            }
+            if (questionInput.value.trim() === '') {
+                qaError.textContent = 'Please enter a question.';
+                return;
+            }
+
+            askQuestionButton.disabled = true;
+            qaSpinner.style.display = 'inline-block';
+            answerResult.textContent = 'Thinking...';
+
+            try {
+                const response = await fetch('/ask_question', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: inputText.value, question: questionInput.value })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    answerResult.textContent = data.answer;
+                } else {
+                    qaError.textContent = `Error: ${data.error || 'An unknown error occurred.'}`;
+                }
+            } catch (error) {
+                qaError.textContent = `Network Error: ${error.message}`;
+                console.error('Error:', error);
+            } finally {
+                askQuestionButton.disabled = false;
+                qaSpinner.style.display = 'none';
+            }
+        });
+
+        // Initial scroll to top and active tab update
+        window.scrollTo(0, 0);
+        updateActiveTab();
+    </script>
+</body>
+</html>
