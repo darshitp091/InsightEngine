@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightEngine 3D - AI-Powered Content Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    
+    <!-- Floating 3D Elements -->
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-brain"></i> InsightEngine 3D
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn-outline" onclick="showLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="#" class="btn-primary" onclick="showSignup()">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1>AI-Powered Content Analysis</h1>
+                <p>Transform your text into actionable insights with our advanced 3D interface and cutting-edge AI technology</p>
+                <div class="hero-buttons">
+                    <a href="#demo" class="btn-hero-primary">
+                        <i class="fas fa-rocket"></i> Try Demo
+                    </a>
+                    <a href="#features" class="btn-hero-secondary">
+                        <i class="fas fa-info-circle"></i> Learn More
+                    </a>
+                </div>
+            </div>
+            <div class="hero-3d-model">
+                <div class="floating-brain">
+                    <i class="fas fa-brain"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section" id="features">
+            <h2 class="section-title">Powerful Analysis Features</h2>
+            <div class="features-grid">
+                <div class="feature-card card-3d">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Smart Summaries</h3>
+                    <p>Generate comprehensive summaries tailored for different audiences - executive, technical, and general readers.</p>
+                </div>
+                <div class="feature-card card-3d">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Sentiment Analysis</h3>
+                    <p>Understand the emotional tone and sentiment of your content with detailed explanations.</p>
+                </div>
+                <div class="feature-card card-3d">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3>Entity Recognition</h3>
+                    <p>Automatically identify key people, organizations, locations, and concepts in your text.</p>
+                </div>
+                <div class="feature-card card-3d">
+                    <div class="feature-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <h3>Bias Detection</h3>
+                    <p>Identify potential biases and ensure your content maintains objectivity and fairness.</p>
+                </div>
+                <div class="feature-card card-3d">
+                    <div class="feature-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Content Synthesis</h3>
+                    <p>Transform your content into tweets, headlines, and blog ideas for maximum engagement.</p>
+                </div>
+                <div class="feature-card card-3d">
+                    <div class="feature-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h3>Interactive Q&A</h3>
+                    <p>Ask questions about your analyzed content and get intelligent, contextual answers.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Section -->
+        <section class="demo-section" id="demo">
+            <h2 class="section-title">Try the Analysis Demo</h2>
+            
+            <!-- Input Section -->
+            <div class="card-3d input-section scroll-reveal">
+                <div class="input-container">
+                    <textarea id="inputText" class="textarea-3d" placeholder="Paste your text here for comprehensive AI analysis..."></textarea>
+                </div>
+                <div class="button-container">
+                    <button id="analyzeButton" class="btn-analyze">
+                        <i class="fas fa-magic"></i> Analyze Text
+                    </button>
+                    <div class="loading-spinner" id="analysisSpinner"></div>
+                    <div class="error-message" id="analysisError" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs scroll-reveal">
+                <div class="nav-tab active" data-target="#summarySection">
+                    <i class="fas fa-file-alt icon"></i> Summary
+                </div>
+                <div class="nav-tab" data-target="#sentimentSection">
+                    <i class="fas fa-heart icon"></i> Sentiment
+                </div>
+                <div class="nav-tab" data-target="#entitiesSection">
+                    <i class="fas fa-tags icon"></i> Entities
+                </div>
+                <div class="nav-tab" data-target="#biasSection">
+                    <i class="fas fa-balance-scale icon"></i> Bias
+                </div>
+                <div class="nav-tab" data-target="#synthesisSection">
+                    <i class="fas fa-lightbulb icon"></i> Synthesis
+                </div>
+                <div class="nav-tab" data-target="#extraSection">
+                    <i class="fas fa-chart-line icon"></i> Insights
+                </div>
+                <div class="nav-tab" data-target="#qaSection">
+                    <i class="fas fa-question-circle icon"></i> Q&A
+                </div>
+            </div>
+
+            <!-- Result Sections -->
+            <div id="summarySection" class="result-section card-3d scroll-reveal">
+                <h2><i class="fas fa-file-alt"></i> Comprehensive Summaries</h2>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h3><i class="fas fa-clipboard-list"></i> General Summary</h3>
+                        <div id="summaryResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                    <div class="summary-item">
+                        <h3><i class="fas fa-briefcase"></i> Executive Summary</h3>
+                        <div id="executiveSummaryResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                    <div class="summary-item">
+                        <h3><i class="fas fa-cogs"></i> Technical Summary</h3>
+                        <div id="technicalSummaryResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                    <div class="summary-item">
+                        <h3><i class="fas fa-user-friends"></i> Non-Expert Summary</h3>
+                        <div id="nonExpertSummaryResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sentimentSection" class="result-section card-3d scroll-reveal">
+                <h2><i class="fas fa-heart"></i> Sentiment Analysis</h2>
+                <div id="sentimentResult" class="result-content">Ready for analysis...</div>
+            </div>
+
+            <div id="entitiesSection" class="result-section card-3d scroll-reveal">
+                <h2><i class="fas fa-tags"></i> Key Entities</h2>
+                <div id="entitiesResult" class="result-content">Ready for analysis...</div>
+            </div>
+
+            <div id="biasSection" class="result-section card-3d scroll-reveal">
+                <h2><i class="fas fa-balance-scale"></i> Bias Detection</h2>
+                <div id="biasDetectionResult" class="result-content">Ready for analysis...</div>
+            </div>
+
+            <div id="synthesisSection" class="result-section card-3d scroll-reveal">
+                <h2><i class="fas fa-lightbulb"></i> Content Synthesis</h2>
+                <div class="synthesis-grid">
+                    <div class="synthesis-item">
+                        <h3><i class="fab fa-twitter"></i> Tweet</h3>
+                        <div id="tweetResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                    <div class="synthesis-item">
+                        <h3><i class="fas fa-blog"></i> Blog Idea</h3>
+                        <div id="blogIdeaResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                    <div class="synthesis-item">
+                        <h3><i class="fas fa-newspaper"></i> Headline</h3>
+                        <div id="headlineResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="extraSection" class="result-section card-3d scroll-reveal">
+                <h2><i class="fas fa-chart-line"></i> Additional Insights</h2>
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <h3><i class="fas fa-hashtag"></i> Topics</h3>
+                        <div id="topicsResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                    <div class="insight-item">
+                        <h3><i class="fas fa-globe"></i> Language</h3>
+                        <div id="languageResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                    <div class="insight-item">
+                        <h3><i class="fas fa-question"></i> Key Questions</h3>
+                        <div id="questionsResult" class="result-content">Ready for analysis...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="qaSection" class="result-section card-3d scroll-reveal">
+                <h2><i class="fas fa-question-circle"></i> Interactive Q&A</h2>
+                <div class="qa-container">
+                    <input type="text" id="questionInput" class="qa-input" placeholder="Ask a question about the analyzed text...">
+                    <div class="qa-button-container">
+                        <button id="askQuestionButton" class="btn-analyze">
+                            <i class="fas fa-paper-plane"></i> Ask Question
+                        </button>
+                        <div class="loading-spinner" id="qaSpinner"></div>
+                        <div class="error-message" id="qaError" style="display: none;"></div>
+                    </div>
+                    <div id="answerResult" class="result-content">Answer will appear here...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about-section" id="about">
+            <div class="about-content card-3d">
+                <h2 class="section-title">About InsightEngine 3D</h2>
+                <p>InsightEngine 3D represents the next generation of AI-powered content analysis tools. Our platform combines advanced natural language processing with an intuitive 3D interface to provide comprehensive insights into your text content.</p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">13+</div>
+                        <div class="stat-label">Analysis Types</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">< 2s</div>
+                        <div class="stat-label">Processing Time</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Availability</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section" id="contact">
+            <div class="contact-content card-3d">
+                <h2 class="section-title">Get In Touch</h2>
+                <p>Ready to transform your content analysis workflow? Contact us to learn more about InsightEngine 3D.</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>contact@insightengine3d.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+1 (555) 123-4567</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>San Francisco, CA</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+                <button class="modal-close" onclick="hideLogin()">&times;</button>
+            </div>
+            <form class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="hideLogin()">Cancel</button>
+                    <button type="submit" class="btn-primary">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Join InsightEngine 3D</h2>
+                <button class="modal-close" onclick="hideSignup()">&times;</button>
+            </div>
+            <form class="auth-form">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Create a password">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="hideSignup()">Cancel</button>
+                    <button type="submit" class="btn-primary">Sign Up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
