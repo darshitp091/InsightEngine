@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightEngine 3D - AI-Powered Content Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #eee;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-element:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { top: 60%; left: 80%; animation-delay: -5s; }
+        .floating-element:nth-child(3) { top: 80%; left: 20%; animation-delay: -10s; }
+        .floating-element:nth-child(4) { top: 30%; left: 70%; animation-delay: -15s; }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(20px) rotate(240deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 0;
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-outline {
+            padding: 10px 20px;
+            border: 2px solid var(--glass-border);
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline:hover {
+            background: var(--glass);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px var(--shadow);
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 50px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 80px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 3D Cards */
+        .card-3d {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.4s ease;
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .card-3d:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 30px 60px var(--shadow);
+        }
+
+        .card-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 20px;
+            z-index: -1;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 50px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .textarea-3d {
+            width: 100%;
+            min-height: 200px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-family: inherit;
+            resize: vertical;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .textarea-3d:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .textarea-3d::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-analyze {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-analyze:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-analyze::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-analyze:hover::before {
+            left: 100%;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--glass);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .nav-tab {
+            padding: 12px 25px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Result Sections */
+        .result-section {
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .result-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: var(--accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .result-section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-content {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 60px;
+            transition: all 0.3s ease;
+        }
+
+        .result-content:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Q&A Section */
+        .qa-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .qa-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+        }
+
+        .qa-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Error Messages */
+        .error-message {
+            background: rgba(234, 67, 53, 0.1);
+            border: 1px solid rgba(234, 67, 53, 0.3);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Icons */
+        .icon {
+            font-size: 1.5rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .card-3d {
+                padding: 25px;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Scroll Animations */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    
+    <!-- Floating Elements -->
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-brain"></i> InsightEngine 3D
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn-outline" onclick="showLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="#" class="btn-primary" onclick="showSignup()">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <h1>AI-Powered Content Analysis</h1>
+            <p>Transform your text into actionable insights with our advanced 3D interface and cutting-edge AI technology</p>
+        </section>
+
+        <!-- Input Section -->
+        <div class="card-3d input-section scroll-reveal">
+            <div class="input-container">
+                <textarea id="inputText" class="textarea-3d" placeholder="Paste your text here for comprehensive AI analysis..."></textarea>
+            </div>
+            <div style="text-align: center;">
+                <button id="analyzeButton" class="btn-analyze">
+                    <i class="fas fa-magic"></i> Analyze Text
+                </button>
+                <div class="loading-spinner" id="analysisSpinner"></div>
+                <div class="error-message" id="analysisError" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs scroll-reveal">
+            <div class="nav-tab active" data-target="#summarySection">
+                <i class="fas fa-file-alt icon"></i> Summary
+            </div>
+            <div class="nav-tab" data-target="#sentimentSection">
+                <i class="fas fa-heart icon"></i> Sentiment
+            </div>
+            <div class="nav-tab" data-target="#entitiesSection">
+                <i class="fas fa-tags icon"></i> Entities
+            </div>
+            <div class="nav-tab" data-target="#biasSection">
+                <i class="fas fa-balance-scale icon"></i> Bias
+            </div>
+            <div class="nav-tab" data-target="#synthesisSection">
+                <i class="fas fa-lightbulb icon"></i> Synthesis
+            </div>
+            <div class="nav-tab" data-target="#extraSection">
+                <i class="fas fa-chart-line icon"></i> Insights
+            </div>
+            <div class="nav-tab" data-target="#qaSection">
+                <i class="fas fa-question-circle icon"></i> Q&A
+            </div>
+        </div>
+
+        <!-- Result Sections -->
+        <div id="summarySection" class="result-section card-3d scroll-reveal">
+            <h2><i class="fas fa-file-alt"></i> Comprehensive Summaries</h2>
+            <h3><i class="fas fa-clipboard-list"></i> General Summary</h3>
+            <div id="summaryResult" class="result-content">Waiting for analysis...</div>
+            <h3><i class="fas fa-briefcase"></i> Executive Summary</h3>
+            <div id="executiveSummaryResult" class="result-content">Waiting for analysis...</div>
+            <h3><i class="fas fa-cogs"></i> Technical Summary</h3>
+            <div id="technicalSummaryResult" class="result-content">Waiting for analysis...</div>
+            <h3><i class="fas fa-user-friends"></i> Non-Expert Summary</h3>
+            <div id="nonExpertSummaryResult" class="result-content">Waiting for analysis...</div>
+        </div>
+
+        <div id="sentimentSection" class="result-section card-3d scroll-reveal">
+            <h2><i class="fas fa-heart"></i> Sentiment Analysis</h2>
+            <div id="sentimentResult" class="result-content">Waiting for analysis...</div>
+        </div>
+
+        <div id="entitiesSection" class="result-section card-3d scroll-reveal">
+            <h2><i class="fas fa-tags"></i> Key Entities</h2>
+            <div id="entitiesResult" class="result-content">Waiting for analysis...</div>
+        </div>
+
+        <div id="biasSection" class="result-section card-3d scroll-reveal">
+            <h2><i class="fas fa-balance-scale"></i> Bias Detection</h2>
+            <div id="biasDetectionResult" class="result-content">Waiting for analysis...</div>
+        </div>
+
+        <div id="synthesisSection" class="result-section card-3d scroll-reveal">
+            <h2><i class="fas fa-lightbulb"></i> Content Synthesis</h2>
+            <h3><i class="fab fa-twitter"></i> Tweet</h3>
+            <div id="tweetResult" class="result-content">Waiting for analysis...</div>
+            <h3><i class="fas fa-blog"></i> Blog Idea</h3>
+            <div id="blogIdeaResult" class="result-content">Waiting for analysis...</div>
+            <h3><i class="fas fa-newspaper"></i> Headline</h3>
+            <div id="headlineResult" class="result-content">Waiting for analysis...</div>
+        </div>
+
+        <div id="extraSection" class="result-section card-3d scroll-reveal">
+            <h2><i class="fas fa-chart-line"></i> Additional Insights</h2>
+            <h3><i class="fas fa-hashtag"></i> Topics</h3>
+            <div id="topicsResult" class="result-content">Waiting for analysis...</div>
+            <h3><i class="fas fa-globe"></i> Language</h3>
+            <div id="languageResult" class="result-content">Waiting for analysis...</div>
+            <h3><i class="fas fa-question"></i> Key Questions</h3>
+            <div id="questionsResult" class="result-content">Waiting for analysis...</div>
+        </div>
+
+        <div id="qaSection" class="result-section card-3d scroll-reveal">
+            <h2><i class="fas fa-question-circle"></i> Interactive Q&A</h2>
+            <input type="text" id="questionInput" class="qa-input" placeholder="Ask a question about the analyzed text...">
+            <div style="text-align: center;">
+                <button id="askQuestionButton" class="btn-analyze">
+                    <i class="fas fa-paper-plane"></i> Ask Question
+                </button>
+                <div class="loading-spinner" id="qaSpinner"></div>
+                <div class="error-message" id="qaError" style="display: none;"></div>
+            </div>
+            <div id="answerResult" class="result-content" style="margin-top: 20px;">Answer will appear here...</div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; backdrop-filter: blur(10px);">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; width: 90%; max-width: 400px;">
+            <h2 style="text-align: center; margin-bottom: 30px; background: var(--primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </h2>
+            <input type="email" placeholder="Email" style="width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 10px; color: white;">
+            <input type="password" placeholder="Password" style="width: 100%; padding: 15px; margin-bottom: 30px; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 10px; color: white;">
+            <div style="display: flex; gap: 15px;">
+                <button onclick="hideLogin()" style="flex: 1; padding: 12px; background: transparent; border: 2px solid var(--glass-border); color: white; border-radius: 10px; cursor: pointer;">Cancel</button>
+                <button style="flex: 1; padding: 12px; background: var(--primary); border: none; color: white; border-radius: 10px; cursor: pointer;">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; backdrop-filter: blur(10px);">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; width: 90%; max-width: 400px;">
+            <h2 style="text-align: center; margin-bottom: 30px; background: var(--secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <i class="fas fa-user-plus"></i> Sign Up
+            </h2>
+            <input type="text" placeholder="Full Name" style="width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 10px; color: white;">
+            <input type="email" placeholder="Email" style="width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 10px; color: white;">
+            <input type="password" placeholder="Password" style="width: 100%; padding: 15px; margin-bottom: 30px; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 10px; color: white;">
+            <div style="display: flex; gap: 15px;">
+                <button onclick="hideSignup()" style="flex: 1; padding: 12px; background: transparent; border: 2px solid var(--glass-border); color: white; border-radius: 10px; cursor: pointer;">Cancel</button>
+                <button style="flex: 1; padding: 12px; background: var(--secondary); border: none; color: white; border-radius: 10px; cursor: pointer;">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal Functions
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+        
+        function hideLogin() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+        
+        function showSignup() {
+            document.getElementById('signupModal').style.display = 'block';
+        }
+        
+        function hideSignup() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        // Scroll Reveal Animation
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.scroll-reveal');
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('revealed');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll(); // Initial check
+
+        // Original functionality
+        const inputText = document.getElementById('inputText');
+        const analyzeButton = document.getElementById('analyzeButton');
+        const analysisSpinner = document.getElementById('analysisSpinner');
+        const analysisError = document.getElementById('analysisError');
+
+        const summaryResult = document.getElementById('summaryResult');
+        const executiveSummaryResult = document.getElementById('executiveSummaryResult');
+        const technicalSummaryResult = document.getElementById('technicalSummaryResult');
+        const nonExpertSummaryResult = document.getElementById('nonExpertSummaryResult');
+        const sentimentResult = document.getElementById('sentimentResult');
+        const entitiesResult = document.getElementById('entitiesResult');
+        const biasDetectionResult = document.getElementById('biasDetectionResult');
+        const tweetResult = document.getElementById('tweetResult');
+        const blogIdeaResult = document.getElementById('blogIdeaResult');
+        const headlineResult = document.getElementById('headlineResult');
+        const topicsResult = document.getElementById('topicsResult');
+        const languageResult = document.getElementById('languageResult');
+        const questionsResult = document.getElementById('questionsResult');
+
+        const questionInput = document.getElementById('questionInput');
+        const askQuestionButton = document.getElementById('askQuestionButton');
+        const qaSpinner = document.getElementById('qaSpinner');
+        const qaError = document.getElementById('qaError');
+        const answerResult = document.getElementById('answerResult');
+
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const resultSections = document.querySelectorAll('.result-section');
+
+        function resetResults() {
+            summaryResult.textContent = 'Waiting for analysis...';
+            executiveSummaryResult.textContent = 'Waiting for analysis...';
+            technicalSummaryResult.textContent = 'Waiting for analysis...';
+            nonExpertSummaryResult.textContent = 'Waiting for analysis...';
+            sentimentResult.textContent = 'Waiting for analysis...';
+            entitiesResult.textContent = 'Waiting for analysis...';
+            biasDetectionResult.textContent = 'Waiting for analysis...';
+            tweetResult.textContent = 'Waiting for analysis...';
+            blogIdeaResult.textContent = 'Waiting for analysis...';
+            headlineResult.textContent = 'Waiting for analysis...';
+            topicsResult.textContent = 'Waiting for analysis...';
+            languageResult.textContent = 'Waiting for analysis...';
+            questionsResult.textContent = 'Waiting for analysis...';
+            answerResult.textContent = 'Answer will appear here...';
+            analysisError.style.display = 'none';
+            qaError.style.display = 'none';
+        }
+
+        function scrollToSection(targetId) {
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function updateActiveTab() {
+            let currentActiveSectionId = '';
+            for (let i = resultSections.length - 1; i >= 0; i--) {
+                const section = resultSections[i];
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                    currentActiveSectionId = section.id;
+                    break;
+                }
+            }
+
+            navTabs.forEach(tab => {
+                if (tab.dataset.target === `#${currentActiveSectionId}`) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+        }
+
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = tab.dataset.target;
+                scrollToSection(targetId);
+            });
+        });
+
+        window.addEventListener('scroll', updateActiveTab);
+        window.addEventListener('resize', updateActiveTab);
+        window.addEventListener('load', updateActiveTab);
+
+        analyzeButton.addEventListener('click', async function(event) {
+            event.preventDefault();
+            resetResults();
+
+            if (inputText.value.trim() === '') {
+                analysisError.textContent = 'Please enter some text to analyze.';
+                analysisError.style.display = 'block';
+                return;
+            }
+
+            analyzeButton.disabled = true;
+            analysisSpinner.style.display = 'block';
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('text', inputText.value);
+
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Analysis failed.');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+
+                    const messages = buffer.split('\n\n');
+                    buffer = messages.pop();
+
+                    for (const message of messages) {
+                        if (message.startsWith('event:')) {
+                            const eventType = message.substring(message.indexOf('event:') + 6, message.indexOf('\n')).trim();
+                            const dataString = message.substring(message.indexOf('data:') + 5).trim();
+
+                            try {
+                                const data = JSON.parse(dataString);
+                                switch (eventType) {
+                                    case 'summary': summaryResult.textContent = data; break;
+                                    case 'sentiment': sentimentResult.textContent = data; break;
+                                    case 'entities': entitiesResult.textContent = data; break;
+                                    case 'executive_summary': executiveSummaryResult.textContent = data; break;
+                                    case 'technical_summary': technicalSummaryResult.textContent = data; break;
+                                    case 'non_expert_summary': nonExpertSummaryResult.textContent = data; break;
+                                    case 'bias_detection': biasDetectionResult.textContent = data; break;
+                                    case 'tweet': tweetResult.textContent = data; break;
+                                    case 'blog_idea': blogIdeaResult.textContent = data; break;
+                                    case 'headline': headlineResult.textContent = data; break;
+                                    case 'topics': topicsResult.textContent = data; break;
+                                    case 'language': languageResult.textContent = data; break;
+                                    case 'questions': questionsResult.textContent = data; break;
+                                    case 'complete':
+                                        analyzeButton.disabled = false;
+                                        analysisSpinner.style.display = 'none';
+                                        scrollToSection('#summarySection');
+                                        break;
+                                }
+                            } catch (parseError) {
+                                console.error('Error parsing JSON from SSE:', parseError, 'Data:', dataString);
+                            }
+                        }
+                    }
+                }
+
+            } catch (error) {
+                analysisError.textContent = `Network Error: ${error.message}`;
+                analysisError.style.display = 'block';
+                console.error('Error:', error);
+                analyzeButton.disabled = false;
+                analysisSpinner.style.display = 'none';
+            }
+        });
+
+        askQuestionButton.addEventListener('click', async function() {
+            qaError.style.display = 'none';
+            if (inputText.value.trim() === '') {
+                qaError.textContent = 'Please analyze text first before asking a question.';
+                qaError.style.display = 'block';
+                return;
+            }
+            if (questionInput.value.trim() === '') {
+                qaError.textContent = 'Please enter a question.';
+                qaError.style.display = 'block';
+                return;
+            }
+
+            askQuestionButton.disabled = true;
+            qaSpinner.style.display = 'block';
+            answerResult.textContent = 'Thinking...';
+
+            try {
+                const response = await fetch('/ask_question', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: inputText.value, question: questionInput.value })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    answerResult.textContent = data.answer;
+                } else {
+                    qaError.textContent = `Error: ${data.error || 'An unknown error occurred.'}`;
+                    qaError.style.display = 'block';
+                }
+            } catch (error) {
+                qaError.textContent = `Network Error: ${error.message}`;
+                qaError.style.display = 'block';
+                console.error('Error:', error);
+            } finally {
+                askQuestionButton.disabled = false;
+                qaSpinner.style.display = 'none';
+            }
+        });
+
+        // Initial setup
+        window.scrollTo(0, 0);
+        updateActiveTab();
+    </script>
+</body>
+</html>
